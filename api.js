@@ -359,3 +359,66 @@ app.delete('/deletePlayer/:playerid', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+const Phone = sequelize.define("Phone", {
+  PhoneCode: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  phoneName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  Username: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  } 
+});
+
+const IMECODE = sequelize.define("IMECODE", {
+  ImCode: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  phoneName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  Username: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  PhoneCode: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Phone,
+      key: 'PhoneCode'
+    }
+  }
+});
+
+Phone.hasOne(IMECODE, { foreignKey: 'PhoneCode' });
+IMECODE.belongsTo(Phone, { foreignKey: 'PhoneCode' });
+
+sequelize.sync().then(() => {
+  console.log('Database & tables created!');
+});
+app.post('/phones', async (req, res) => {
+  try {
+    const phone = await Phone.create(req.body);
+    res.status(201).json(phone);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST route for creating a new IMECODE
+app.post('/imecodes', async (req, res) => {
+  try {
+    const imecode = await IMECODE.create(req.body);
+    res.status(201).json(imecode);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
